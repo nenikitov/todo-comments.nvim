@@ -33,7 +33,7 @@ local function todo(opts)
   opts.entry_maker = function(line)
     local ret = entry_maker(line)
     ret.display = function(entry)
-      local display = string.format("%s:%s:%s ", entry.filename, entry.lnum, entry.col)
+      local display = string.format("%s:%s:%s", entry.filename, entry.lnum, entry.col)
       local text = entry.text
       local start, finish, kw = Highlight.match(text)
 
@@ -47,6 +47,9 @@ local function todo(opts)
         text = vim.trim(text:sub(start))
 
         local is_wide = Config.options.highlight.keyword:sub(1, 4) == "wide"
+        if is_wide then
+            display = display .. " "
+        end
         local keyword_highlight
         if Config.options.highlight.keyword == "" then
           keyword_highlight = ""
