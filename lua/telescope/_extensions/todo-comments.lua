@@ -43,16 +43,37 @@ local function todo(opts)
         kw = Config.keywords[kw] or kw
         local icon = Config.options.keywords[kw].icon
         display = icon .. " " .. display
-        table.insert(hl, { { 1, #icon + 1 }, "TodoFg" .. kw })
+        table.insert(hl, { { 0, #icon + 1 }, "TodoSign" .. kw })
         text = vim.trim(text:sub(start))
 
+        local is_wide = Config.options.highlight.keyword:sub(1, 4) == "wide"
+        local keyword_highlight
+        if Config.options.highlight.keyword == "" then
+          keyword_highlight = ""
+        elseif Config.options.highlight.keyword:sub(-2) == "fg" then
+          keyword_highlight = "TodoFg" .. kw
+        else
+          keyword_highlight = "TodoBg" .. kw
+        end
         table.insert(hl, {
-          { #display, #display + finish - start + 2 },
-          "TodoBg" .. kw,
+          is_wide
+            and { #display, #display + finish - start + 2 }
+            or { #display + 1, #display + finish - start + 1 },
+          keyword_highlight
         })
+
+        local after_highlight
+        if Config.options.highlight.after == "" then
+          after_highlight = ""
+        elseif Config.options.highlight.after == "fg" then
+          after_highlight = "TodoFg" .. kw
+        else
+          after_highlight = "TodoBg" .. kw
+        end
+
         table.insert(hl, {
           { #display + finish - start + 1, #display + finish + 1 + #text },
-          "TodoFg" .. kw,
+          after_highlight
         })
         display = display .. " " .. text
       end
